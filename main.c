@@ -1,57 +1,32 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: kai11 <kai11@student.42.fr>                +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/23 20:25:29 by kkodaira          #+#    #+#             */
-/*   Updated: 2024/06/30 19:06:33 by kai11            ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include "include/minishell.h"
 
-#include "minishell.h"
-#include <stdio.h>
-
-t_info	g_info = {};
-
-void	interpret(char *line)
+bool	is_exit_command(char *input)
 {
-	t_token	*tok;
-	t_node	*node;
-
-	tok = tokenize(line);
-	if (g_info.syntax_error == true)
-		g_info.last_status = TOKENIZE_ERROR;
-	else
+	if (strcmp(input, "exit") == 0)
 	{
-		node = parse(tok);
-		if (g_info.syntax_error)
-			g_info.last_status = PARSE_ERROR;
-		else
-		{
-			expand(node);
-			g_info.last_status = exec(node);
-		}
+		printf("exit\n");
+		return (true);
 	}
+	return (false);
 }
 
-int	main(void)
+int main(void)
 {
-	char	*line;
+	char *input;
 
-	rl_outstream = stderr;
-	env_init();
-	setup_signal();
 	while (1)
 	{
-		line = readline("minishell$ ");
-		if (line == NULL)
+		input = readline("minishell> ");
+		if (!input)
+		{
+			printf("\nExit\n");
 			break ;
-		if (*line)
-			add_history(line);
-		interpret(line);
-		free(line);
+		}
+		if (*input)
+			add_history(input);
+		if (is_exit_command(input))
+			return (EXIT_SUCCESS);
+		interpret(input);
 	}
-	exit(g_info.last_status);
+	return (EXIT_SUCCESS);
 }
