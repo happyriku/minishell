@@ -73,20 +73,14 @@ char	*search_path(char *input)
 		path = (char *)malloc(sizeof(char) * (path_len + strlen(input) + 2));
 		if (!path)
 			return (NULL);
-		printf("value : %s\n", value);
 		ft_strncpy(path, value, path_len);
-		printf("path : %s\n", path);
 		strcat(path, "/");
 		path = ft_strjoin(path, input);
-		printf("complete path : %s\n", path);
 		if (access(path, X_OK) == 0)
 			return (path);
 		free(path);
-		if (!value)
-		{
-			printf("------------\n");
+		if (!pos)
 			return (NULL);
-		}
 		value = pos + 1;
 	}
 	return (NULL);
