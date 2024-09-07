@@ -39,7 +39,7 @@ char	*ft_strjoin(char *s1, char *s2)
 
 char	*ft_strncpy(char *dst, char *src, int n)
 {
-	int i;
+	int	i;
 
 	if (!src)
 		return (NULL);
@@ -56,12 +56,11 @@ char	*ft_strncpy(char *dst, char *src, int n)
 char	*search_path(char *input)
 {
 	char	*value;
-	int		res;
 	char	*path;
 	char	*pos;
 	int		path_len;
 
-	value = getenv(input);
+	value = getenv("PATH");
 	if (!value)
 		return (NULL);
 	while (*value)
@@ -74,22 +73,22 @@ char	*search_path(char *input)
 		path = (char *)malloc(sizeof(char) * (path_len + strlen(input) + 2));
 		if (!path)
 			return (NULL);
-		strncpy(path, value, path_len);
-		sleep(1);
-		//printf("\nvalue : %s\n", value);
+		printf("value : %s\n", value);
+		ft_strncpy(path, value, path_len);
+		printf("path : %s\n", path);
 		strcat(path, "/");
-		//printf("path : %s\n", path);
 		path = ft_strjoin(path, input);
 		printf("complete path : %s\n", path);
 		if (access(path, X_OK) == 0)
-		{
-			printf("環境変数のPATH : %s\n", path);
 			return (path);
-		}
 		free(path);
+		if (!value)
+		{
+			printf("------------\n");
+			return (NULL);
+		}
 		value = pos + 1;
 	}
-	printf("Not found Executable files\n");
 	return (NULL);
 }
 
@@ -107,7 +106,10 @@ int	interpret(char *input)
 	{
 		path = search_path(input);
 		if (!path)
+		{
+			//printf("---------\n");
 			path = input;
+		}
 		if (execve(path, argv, environ) == -1)
 			print_error(input, "exec failed");
 	}
