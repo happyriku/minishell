@@ -26,7 +26,8 @@ int main(void)
 			add_history(input);
 		if (is_exit_command(input))
 			return (EXIT_SUCCESS);
-		interpret(input);
+		if (interpret(input) != 0)
+			return (EXIT_FAILED);
 	}
 	return (EXIT_SUCCESS);
 }

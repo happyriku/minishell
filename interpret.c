@@ -101,7 +101,11 @@ int	interpret(char *input)
 		path = search_path(input);
 		if (!path)
 		{
-			//printf("---------\n");
+			if (!strchr(input, '/'))
+			{
+				printf("%s: command not found\n", input);
+				return (0);
+			}
 			path = input;
 		}
 		if (execve(path, argv, environ) == -1)
@@ -110,8 +114,7 @@ int	interpret(char *input)
 	else
 	{
 		wait(&status);
-		if (!WIFEXITED(status))
-			print_error(input, "wait failed");
+		return (WIFEXITED(status));
 	}
 	return (0);
 }
