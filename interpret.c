@@ -95,7 +95,6 @@ int	interpret(char *input)
 	t_token	*token;
 
 	token = tokenize(input);
-	token = token->next;
 	pid = fork();
 	if (pid < 0)
 		print_error(input, "fork failed");

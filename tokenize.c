@@ -8,12 +8,12 @@ bool	ft_isspace(char c)
 
 bool	is_metacharacter(char c)
 {
-	return (strchr("<>&;", c));
+	return (strchr("|&;()<> \t\n", c));
 }
 
-bool	is_ctrlop(char c)
+bool	is_ctrlop(char	*str)
 {
-	char op[] = {"||", "&&", "(", ")", ";;", ";&"};
+	char *op[] = {"||", "&&", "(", ")", ";;", ";&"};
 	int	i;
 	int	length;
 
@@ -21,35 +21,33 @@ bool	is_ctrlop(char c)
 	i = -1;
 	while (++i < length)
 	{
-		if (c == op[i])
+		if (strncmp(str, op, strlen(op[i])) == 0)
 			return (true);
 	}
 	return (false);
 }
 
-bool	is_word(char c)
+bool	is_word(char *str)
 {
-	return (!ft_isspace(c)
-		&& !is_metacharacter(c) && !is_ctrlop(c));
+	return (!is_ctrlop(str));
 }
 
-t_token	*new_token(t_kind kind, t_token *cur, char c)
+t_token	*word(t_token *cur, char *input, char **rest)
 {
-	t_token	*token;
+	if (is_metacharacter(*input))
+		return (new_token(TK_METACHAR, cur, input));
+	
+}
 
+t_token	*new_token(t_kind kind, t_token *cur, char str)
+{
 	if (kind == TK_EOF)
 	{
-		token->word = NULL;
+		cur->word = NULL;
 		return (cur);
 	}
-	else if (kind == TK_METACHAR)
-		token->metacharacter = c;
-	else if (kind == TK_OPERATOR)
-		token->ctrl_op = c;
-	else if (kind == TK_WORD)
-		token->word = c;
-	cur = token->next;
-	return (cur);
+	cur->word = str;
+	return (cur->next);
 }
 
 t_token	*tokenize(char *input)
@@ -58,19 +56,17 @@ t_token	*tokenize(char *input)
 	t_token	*cur;
 
 	head.next = NULL;
-	cur = head.next;
+	cur = &head.next;
 	while (*input)
 	{
 		while (ft_isspace(*input))
 			input++;
-		if (is_metacharacter(*input))
-			cur = new_token(TK_METACHAR, cur, *input);
-		else if (is_ctrlop(*input))
-			cur = new_token(TK_OPERATOR, cur, *input);
-		else if (is_word(*input))
-			cur = new_token(TK_WORD, cur, *input);
+		if (is_ctrlop(input))
+			cur = new_token(TK_OPERATOR, cur, input);
+		else if(is_word(input))
+			cur = word(cur, input, &input);
 		input++;
 	}
 	cur = new_token(TK_EOF, cur, *input);
-	return (&head);
+	return (head.next);
 }

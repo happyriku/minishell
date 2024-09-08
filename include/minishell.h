@@ -25,9 +25,7 @@ typedef struct s_token
 {
 	t_kind			kind;
 	struct s_toke	*next;
-	char			metacharacter;
-	char			ctrl_op;
-	char			word;
+	char			*word;
 }	t_token;
 
 int		interpret(char *input);
