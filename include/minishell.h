@@ -18,18 +18,19 @@ typedef enum s_kind
 	TK_WORD,
 	TK_METACHAR,
 	TK_OPERATOR,
-
+	TK_EOF,
 }	t_kind;
 
 typedef struct s_token
 {
 	t_kind			kind;
 	struct s_toke	*next;
-	char			*metacharacter;
-	char			*ctrl_op;
-	char			*word;
+	char			metacharacter;
+	char			ctrl_op;
+	char			word;
 }	t_token;
 
-int	interpret(char *input);
+int		interpret(char *input);
+t_token	*tokenize(char *input);
 
 #endif
