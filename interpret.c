@@ -1,6 +1,6 @@
 #include "include/minishell.h"
 
-extern char **environ;
+extern char	**environ;
 
 void	print_error(char *input, char *name)
 {
@@ -92,7 +92,9 @@ int	interpret(char *input)
 	pid_t	pid;
 	int		status;
 	char	*path;
+	t_token	*token;
 
+	token = token->next = tokenize(input);
 	pid = fork();
 	if (pid < 0)
 		print_error(input, "fork failed");
@@ -114,7 +116,7 @@ int	interpret(char *input)
 	else
 	{
 		wait(&status);
-		return (WIFEXITED(status));
+		return (!WIFEXITED(status));
 	}
 	return (0);
 }

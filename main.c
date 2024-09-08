@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rishibas <rishibas@student.42.fr>          #+#  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024-09-08 04:22:00 by rishibas          #+#    #+#             */
+/*   Updated: 2024-09-08 04:22:00 by rishibas         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "include/minishell.h"
 
 bool	is_exit_command(char *input)
@@ -10,9 +22,9 @@ bool	is_exit_command(char *input)
 	return (false);
 }
 
-int main(void)
+int	main(void)
 {
-	char *input;
+	char	*input;
 
 	while (1)
 	{
