@@ -29,7 +29,14 @@ typedef struct s_token
 }	t_token;
 
 int		interpret(char *input);
-t_token	*tokenize(char *input);
 char	*ft_strndup(const char *s1, size_t n);
+//tokenize
+t_token	*tokenize(char *input);
+t_token	*new_token(char *str, t_kind kind);
+bool	is_word(char *str);
+bool	is_blank(char c);
+bool	is_metacharacter(char c);
+bool	is_ctrlop(char	*str);
+bool	is_word(char *str);
 
 #endif

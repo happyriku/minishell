@@ -1,6 +1,11 @@
 NAME = minishell
 
-SRCS = main.c interpret.c tokenize.c
+SRCS = main.c \
+		interpret.c \
+		tokenize/tokenize.c \
+		tokenize/new_token.c \
+		tokenize/validation.c \
+		
 OBJS = $(SRCS:.c=.o)
 
 LIBS = -lreadline

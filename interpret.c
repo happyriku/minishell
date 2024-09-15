@@ -135,7 +135,6 @@ int	ft_lstsize(t_token *lst)
 
 int	interpret(char *input)
 {
-	// char	*argv[] = {input, NULL};
 	char	**argv;
 	pid_t	pid;
 	int		status;
@@ -158,14 +157,12 @@ int	interpret(char *input)
 	}
 	tmp = token;
 	int i = 0;
-	while (tmp && i < ft_lstsize(tmp))
+	while (tmp)
 	{
 		argv[i] = tmp->word;
 		tmp = tmp->next;
-		printf("argv[%d] : %s\n", i, argv[i]);
 		i++;
 	}
-	printf("====");
 	argv[i] = NULL;
 	pid = fork();
 	if (pid < 0)
@@ -192,14 +189,19 @@ int	interpret(char *input)
 		if (strncmp(argv[0], "echo", 4) == 0)
 		{
 			i = 1;
-			printf("---------\n");
-			printf("argv[i] : %s\n", argv[i]);
-			while (argv[i] != NULL)
-			{
+			if (argv[i + 1] == NULL)
 				printf("%s", argv[i]);
-				printf(" ");
-				i++;
+			else
+			{
+				while (argv[i] != NULL && is_word(argv[i]))
+				{
+					printf("%s", argv[i]);
+					printf(" ");
+					i++;
+				}
 			}
+			printf("\n");
+			
 		}
 		else if (execve(path, argv, environ) == -1)
 			print_error(input, "exec failed");
