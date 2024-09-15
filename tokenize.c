@@ -49,6 +49,7 @@ t_token	*new_token(t_kind kind, t_token *token, char *str, char **rest)
 	{
 		while (**rest && !is_blank(**rest))
 		{
+			printf("*rest : %p\n", *rest);
 			(*rest)++;
 		}
 		new_token->word = str;
@@ -79,6 +80,5 @@ t_token	*tokenize(char *input)
 		input++;
 	}
 	token = new_token(TK_EOF, token, input, &input);
-	printf("head.next : %p\n", &head.next);
 	return (head.next);
 }
