@@ -44,12 +44,18 @@ t_token	*new_token(t_kind kind, char *str, char **rest)
 		new_token->word = NULL;
 		return (new_token);
 	}
+	else if (kind == TK_OPERATOR)
+		new_token->word = ft_strdup(str);
 	else if (kind == TK_METACHAR)
 		new_token->word = str;
 	else if (kind == TK_WORD)
 	{
-		while (**rest && !is_blank(**rest))
+		while (**rest && is_word(*rest))
+		{
+			printf("**rest : %c\n", **rest);
 			(*rest)++;
+			printf("%d\n", is_word(*rest));
+		}
 		new_token->word = ft_strdup(str);
 	}
 	return (new_token);
