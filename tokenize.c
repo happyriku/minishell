@@ -1,19 +1,18 @@
 #include "include/minishell.h"
 
-bool	ft_isspace(char c)
+bool	is_blank(char c)
 {
-	return (c == ' ' || c == '\t'
-		|| c == '\f' || c == '\n' || c == '\v');
+	return (c == ' ' || c == '\t');
 }
 
 bool	is_metacharacter(char c)
 {
-	return (strchr("|&;()<> \t\n", c));
+	return (strchr("|&;()<>\t\n' '", c));
 }
 
 bool	is_ctrlop(char	*str)
 {
-	char *op[] = {"||", "&&", "(", ")", ";;", ";&"};
+	char *op[] = {"||", "&&", "(", ")", ";;", ";&", "&", ";", "|&", '\n'};
 	int	i;
 	int	length;
 
@@ -29,44 +28,52 @@ bool	is_ctrlop(char	*str)
 
 bool	is_word(char *str)
 {
-	return (!is_ctrlop(str));
+	return (!is_ctrlop(str) && !is_metacharacter(*str));
 }
 
-t_token	*word(t_token *cur, char *input, char **rest)
+t_token	*word(t_token *token, char *input, char **rest)
 {
 	if (is_metacharacter(*input))
-		return (new_token(TK_METACHAR, cur, input));
-	
+		return (new_token(TK_METACHAR, token, input));
+	else if (is_word(input))
+		return (new_token(TK_WORD, token, input));
+	else
+		return (NULL);
 }
 
-t_token	*new_token(t_kind kind, t_token *cur, char str)
+t_token	*new_token(t_kind kind, t_token *token, char *str)
 {
 	if (kind == TK_EOF)
 	{
-		cur->word = NULL;
-		return (cur);
+		token->word = NULL;
+		return (token);
 	}
-	cur->word = str;
-	return (cur->next);
+	else if (kind == TK_METACHAR)
+		token->word = str;
+	else if (kind == TK_WORD)
+		token->word = str;
+	return (token->next);
 }
 
 t_token	*tokenize(char *input)
 {
 	t_token	head;
-	t_token	*cur;
+	t_token	*token;
 
 	head.next = NULL;
-	cur = &head.next;
+	token = &head.next;
 	while (*input)
 	{
-		while (ft_isspace(*input))
+		while (is_blank(*input))
 			input++;
 		if (is_ctrlop(input))
-			cur = new_token(TK_OPERATOR, cur, input);
+			token = new_token(TK_OPERATOR, token, input);
+		else if (is_metacharacter(*input))
+			token = new_token(TK_METACHAR, token, input);
 		else if(is_word(input))
-			cur = word(cur, input, &input);
+			token = new_token(TK_WORD, token, input);
 		input++;
 	}
-	cur = new_token(TK_EOF, cur, *input);
+	token = new_token(TK_EOF, token, *input);
 	return (head.next);
 }

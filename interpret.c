@@ -95,28 +95,34 @@ int	interpret(char *input)
 	t_token	*token;
 
 	token = tokenize(input);
-	pid = fork();
-	if (pid < 0)
-		print_error(input, "fork failed");
-	else if (pid == 0)
+	while (token)
 	{
-		path = search_path(input);
-		if (!path)
-		{
-			if (!strchr(input, '/'))
-			{
-				printf("%s: command not found\n", input);
-				return (0);
-			}
-			path = input;
-		}
-		if (execve(path, argv, environ) == -1)
-			print_error(input, "exec failed");
+		printf("token->word : %s\n", token->word);
+		token = token->next;
 	}
-	else
-	{
-		wait(&status);
-		return (!WIFEXITED(status));
-	}
+	printf("token->word : %s\n", token->word);
+	// pid = fork();
+	// if (pid < 0)
+	// 	print_error(input, "fork failed");
+	// else if (pid == 0)
+	// {
+	// 	path = search_path(input);
+	// 	if (!path)
+	// 	{
+	// 		if (!strchr(input, '/'))
+	// 		{
+	// 			printf("%s: command not found\n", input);
+	// 			return (0);
+	// 		}
+	// 		path = input;
+	// 	}
+	// 	if (execve(path, argv, environ) == -1)
+	// 		print_error(input, "exec failed");
+	// }
+	// else
+	// {
+	// 	wait(&status);
+	// 	return (!WIFEXITED(status));
+	// }
 	return (0);
 }
