@@ -31,30 +31,28 @@ bool	is_word(char *str)
 	return (!is_ctrlop(str) && !is_metacharacter(*str));
 }
 
-t_token	*new_token(t_kind kind, t_token *token, char *str, char **rest)
+t_token	*new_token(t_kind kind, char *str, char **rest)
 {
 	t_token	*new_token;
 
 	new_token = (t_token *)malloc(sizeof(t_token));
 	if (!new_token)
 		return (NULL);
+	new_token->next = NULL;
 	if (kind == TK_EOF)
 	{
 		new_token->word = NULL;
-		return (token);
+		return (new_token);
 	}
 	else if (kind == TK_METACHAR)
 		new_token->word = str;
 	else if (kind == TK_WORD)
 	{
 		while (**rest && !is_blank(**rest))
-		{
-			printf("*rest : %p\n", *rest);
 			(*rest)++;
-		}
-		new_token->word = str;
+		new_token->word = ft_strdup(str);
 	}
-	return (new_token->next);
+	return (new_token);
 }
 
 t_token	*tokenize(char *input)
@@ -63,22 +61,25 @@ t_token	*tokenize(char *input)
 	t_token	*token;
 
 	head.next = NULL;
-	token = &head.next;
+	token = &head;
 	while (*input)
 	{
 		while (is_blank(*input))
 			input++;
 		if (is_ctrlop(input))
-			token = new_token(TK_OPERATOR, token, input, &input);
-		else if (is_metacharacter(*input))
-			token = new_token(TK_METACHAR, token, input, &input);
-		if (is_word(input))
 		{
-			token = new_token(TK_WORD, token, input, &input);
-			continue ;
+			token->next = new_token(TK_OPERATOR, input, &input);
+			input++;
 		}
-		input++;
+		else if (is_metacharacter(*input))
+		{
+			token->next = new_token(TK_METACHAR, input, &input);
+			input++;
+		}
+		if (is_word(input))
+			token->next = new_token(TK_WORD, input, &input);
+		token = token->next;
 	}
-	token = new_token(TK_EOF, token, input, &input);
+	token = new_token(TK_EOF, input, &input);
 	return (head.next);
 }

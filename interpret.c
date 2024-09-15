@@ -2,6 +2,24 @@
 
 extern char	**environ;
 
+char	*ft_strdup(const char *s1)
+{
+	char	*dest;
+	int		size;
+	int		i;
+
+	i = -1;
+	size = strlen(s1) + 1;
+	dest = (char *)malloc(size * sizeof(char));
+	if (s1 == NULL)
+		return (NULL);
+	if (dest == NULL)
+		return (NULL);
+	while (++i < size)
+		dest[i] = s1[i];
+	return (dest);
+}
+
 void	print_error(char *input, char *name)
 {
 	free(input);
@@ -93,14 +111,23 @@ int	interpret(char *input)
 	int		status;
 	char	*path;
 	t_token	*token;
+	t_token *tmp;
 
 	token = tokenize(input);
+	tmp = token;
 	while (token)
 	{
 		printf("token->word : %s\n", token->word);
 		token = token->next;
 	}
-	printf("token->word : %s\n", token->word);
+	token = tmp;
+	while (token)
+	{
+		tmp = token->next;
+		free(token);
+		free(token->word);
+		token = tmp;
+	}
 	// pid = fork();
 	// if (pid < 0)
 	// 	print_error(input, "fork failed");

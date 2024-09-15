@@ -24,11 +24,12 @@ typedef enum s_kind
 typedef struct s_token
 {
 	t_kind			kind;
-	struct s_toke	*next;
+	struct s_token	*next;
 	char			*word;
 }	t_token;
 
 int		interpret(char *input);
 t_token	*tokenize(char *input);
+char	*ft_strdup(const char *s1);
 
 #endif
