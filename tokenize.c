@@ -12,15 +12,15 @@ bool	is_metacharacter(char c)
 
 bool	is_ctrlop(char	*str)
 {
-	char *op[] = {"||", "&&", "(", ")", ";;", ";&", "&", ";", "|&", '\n'};
-	int	i;
-	int	length;
+	char	*op[] = {"||", "&&", "(", ")", ";;", ";&", "&", ";", "|&", "\n"};
+	int		i;
+	int		length;
 
 	length = sizeof(op) / sizeof(op[0]);
 	i = -1;
 	while (++i < length)
 	{
-		if (strncmp(str, op, strlen(op[i])) == 0)
+		if (strncmp(str, op[i], strlen(op[i])) == 0)
 			return (true);
 	}
 	return (false);
@@ -31,28 +31,29 @@ bool	is_word(char *str)
 	return (!is_ctrlop(str) && !is_metacharacter(*str));
 }
 
-t_token	*word(t_token *token, char *input, char **rest)
+t_token	*new_token(t_kind kind, t_token *token, char *str, char **rest)
 {
-	if (is_metacharacter(*input))
-		return (new_token(TK_METACHAR, token, input));
-	else if (is_word(input))
-		return (new_token(TK_WORD, token, input));
-	else
-		return (NULL);
-}
+	t_token	*new_token;
 
-t_token	*new_token(t_kind kind, t_token *token, char *str)
-{
+	new_token = (t_token *)malloc(sizeof(t_token));
+	if (!new_token)
+		return (NULL);
 	if (kind == TK_EOF)
 	{
-		token->word = NULL;
+		new_token->word = NULL;
 		return (token);
 	}
 	else if (kind == TK_METACHAR)
-		token->word = str;
+		new_token->word = str;
 	else if (kind == TK_WORD)
-		token->word = str;
-	return (token->next);
+	{
+		while (**rest && !is_blank(**rest))
+		{
+			(*rest)++;
+		}
+		new_token->word = str;
+	}
+	return (new_token->next);
 }
 
 t_token	*tokenize(char *input)
@@ -67,13 +68,17 @@ t_token	*tokenize(char *input)
 		while (is_blank(*input))
 			input++;
 		if (is_ctrlop(input))
-			token = new_token(TK_OPERATOR, token, input);
+			token = new_token(TK_OPERATOR, token, input, &input);
 		else if (is_metacharacter(*input))
-			token = new_token(TK_METACHAR, token, input);
-		else if(is_word(input))
-			token = new_token(TK_WORD, token, input);
+			token = new_token(TK_METACHAR, token, input, &input);
+		if (is_word(input))
+		{
+			token = new_token(TK_WORD, token, input, &input);
+			continue ;
+		}
 		input++;
 	}
-	token = new_token(TK_EOF, token, *input);
+	token = new_token(TK_EOF, token, input, &input);
+	printf("head.next : %p\n", &head.next);
 	return (head.next);
 }
