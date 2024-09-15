@@ -2,21 +2,24 @@
 
 extern char	**environ;
 
-char	*ft_strdup(const char *s1)
+char	*ft_strndup(const char *s1, size_t n)
 {
-	char	*dest;
-	int		size;
-	int		i;
+	char		*dest;
+	int			size;
+	size_t		i;
 
-	i = -1;
 	size = strlen(s1) + 1;
 	dest = (char *)malloc(size * sizeof(char));
 	if (s1 == NULL)
 		return (NULL);
 	if (dest == NULL)
 		return (NULL);
-	while (++i < size)
+	printf("n : %ld\n", n);
+	i = -1;
+	while (s1[++i] && i < n)
 		dest[i] = s1[i];
+	dest[i] = '\0';
+	printf("dest : %s\n", dest);
 	return (dest);
 }
 

@@ -30,6 +30,6 @@ typedef struct s_token
 
 int		interpret(char *input);
 t_token	*tokenize(char *input);
-char	*ft_strdup(const char *s1);
+char	*ft_strndup(const char *s1, size_t n);
 
 #endif

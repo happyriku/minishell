@@ -34,29 +34,32 @@ bool	is_word(char *str)
 t_token	*new_token(t_kind kind, char *str, char **rest)
 {
 	t_token	*new_token;
+	size_t	wc;
 
 	new_token = (t_token *)malloc(sizeof(t_token));
 	if (!new_token)
 		return (NULL);
 	new_token->next = NULL;
+	wc = 0;
 	if (kind == TK_EOF)
 	{
 		new_token->word = NULL;
 		return (new_token);
 	}
 	else if (kind == TK_OPERATOR)
-		new_token->word = ft_strdup(str);
+	{	
+		new_token->word = ft_strndup(str, strlen(*rest));
+	}
 	else if (kind == TK_METACHAR)
-		new_token->word = str;
+		new_token->word = ft_strndup(str, 1);
 	else if (kind == TK_WORD)
 	{
 		while (**rest && is_word(*rest))
 		{
-			printf("**rest : %c\n", **rest);
 			(*rest)++;
-			printf("%d\n", is_word(*rest));
+			wc++;
 		}
-		new_token->word = ft_strdup(str);
+		new_token->word = ft_strndup(str, wc);
 	}
 	return (new_token);
 }
