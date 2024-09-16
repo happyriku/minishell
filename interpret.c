@@ -167,9 +167,6 @@ int	interpret(char *input)
 	pid = fork();
 	if (pid < 0)
 	{
-		i = -1;
-		while (++i < ft_lstsize(token))
-			free(argv[i]);
 		free(argv);
 		cleanup_token(&token);
 		print_error(input, "fork failed");
@@ -201,7 +198,6 @@ int	interpret(char *input)
 				}
 			}
 			printf("\n");
-			
 		}
 		else if (execve(path, argv, environ) == -1)
 			print_error(input, "exec failed");
@@ -209,9 +205,6 @@ int	interpret(char *input)
 	else
 	{
 		wait(&status);
-		i = -1;
-		while (++i < ft_lstsize(token))
-			free(argv[i]);
 		free(argv);
 		cleanup_token(&token);
 		return (!WIFEXITED(status));
