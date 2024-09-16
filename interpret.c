@@ -14,12 +14,10 @@ char	*ft_strndup(const char *s1, size_t n)
 		return (NULL);
 	if (dest == NULL)
 		return (NULL);
-	printf("n : %ld\n", n);
 	i = -1;
 	while (s1[++i] && i < n)
 		dest[i] = s1[i];
 	dest[i] = '\0';
-	printf("dest : %s\n", dest);
 	return (dest);
 }
 
@@ -107,9 +105,38 @@ char	*search_path(char *input)
 	return (NULL);
 }
 
+void	cleanup_token(t_token **token)
+{
+	t_token	*tmp;
+
+	while (*token)
+	{
+		tmp = (*token)->next;
+		free(*token);
+		free((*token)->word);
+		*token = tmp;
+	}
+}
+
+int	ft_lstsize(t_token *lst)
+{
+	int size;
+
+    if (!lst)
+        return (0);
+	size = 0;
+	while (lst)
+	{
+		size++;
+		lst = lst->next;
+	}
+	return (size);
+}
+
 int	interpret(char *input)
 {
-	char	*argv[] = {input, NULL};
+	// char	*argv[] = {input, NULL};
+	char	**argv;
 	pid_t	pid;
 	int		status;
 	char	*path;
@@ -118,41 +145,74 @@ int	interpret(char *input)
 
 	token = tokenize(input);
 	tmp = token;
-	while (token)
+	while (tmp)
 	{
-		printf("token->word : %s\n", token->word);
-		token = token->next;
+		printf("token->word : %s\n", tmp->word);
+		tmp = tmp->next;
 	}
-	token = tmp;
-	while (token)
+	argv = (char **)malloc(sizeof(char *) * (ft_lstsize(token) + 1));
+	if (!argv)
 	{
-		tmp = token->next;
-		free(token);
-		free(token->word);
-		token = tmp;
+		cleanup_token(&token);
+		return (1);
 	}
-	// pid = fork();
-	// if (pid < 0)
-	// 	print_error(input, "fork failed");
-	// else if (pid == 0)
-	// {
-	// 	path = search_path(input);
-	// 	if (!path)
-	// 	{
-	// 		if (!strchr(input, '/'))
-	// 		{
-	// 			printf("%s: command not found\n", input);
-	// 			return (0);
-	// 		}
-	// 		path = input;
-	// 	}
-	// 	if (execve(path, argv, environ) == -1)
-	// 		print_error(input, "exec failed");
-	// }
-	// else
-	// {
-	// 	wait(&status);
-	// 	return (!WIFEXITED(status));
-	// }
+	tmp = token;
+	int i = 0;
+	while (tmp && i < ft_lstsize(tmp))
+	{
+		argv[i] = tmp->word;
+		tmp = tmp->next;
+		printf("argv[%d] : %s\n", i, argv[i]);
+		i++;
+	}
+	printf("====");
+	argv[i] = NULL;
+	pid = fork();
+	if (pid < 0)
+	{
+		i = -1;
+		while (++i < ft_lstsize(token))
+			free(argv[i]);
+		free(argv);
+		cleanup_token(&token);
+		print_error(input, "fork failed");
+	}
+	else if (pid == 0)
+	{
+		path = search_path(argv[0]);
+		if (!path)
+		{
+			if (!strchr(argv[0], '/'))
+			{
+				printf("%s: command not found\n", argv[0]);
+				return (0);
+			}
+			path = argv[0];
+		}
+		if (strncmp(argv[0], "echo", 4) == 0)
+		{
+			i = 1;
+			printf("---------\n");
+			printf("argv[i] : %s\n", argv[i]);
+			while (argv[i] != NULL)
+			{
+				printf("%s", argv[i]);
+				printf(" ");
+				i++;
+			}
+		}
+		else if (execve(path, argv, environ) == -1)
+			print_error(input, "exec failed");
+	}
+	else
+	{
+		wait(&status);
+		i = -1;
+		while (++i < ft_lstsize(token))
+			free(argv[i]);
+		free(argv);
+		cleanup_token(&token);
+		return (!WIFEXITED(status));
+	}
 	return (0);
 }
