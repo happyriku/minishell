@@ -2,74 +2,11 @@
 
 extern char	**environ;
 
-char	*ft_strndup(const char *s1, size_t n)
-{
-	char		*dest;
-	int			size;
-	size_t		i;
-
-	size = strlen(s1) + 1;
-	dest = (char *)malloc(size * sizeof(char));
-	if (s1 == NULL)
-		return (NULL);
-	if (dest == NULL)
-		return (NULL);
-	i = -1;
-	while (s1[++i] && i < n)
-		dest[i] = s1[i];
-	dest[i] = '\0';
-	return (dest);
-}
-
 void	print_error(char *input, char *name)
 {
 	free(input);
 	printf("%s\n", name);
 	exit(1);
-}
-
-char	*ft_strjoin(char *s1, char *s2)
-{
-	size_t	i;
-	size_t	j;
-	size_t	s1_len;
-	size_t	s2_len;
-	char	*str;
-
-	s1_len = strlen(s1);
-	s2_len = strlen(s2);
-	str = (char *)malloc(sizeof(char) * (s1_len + s2_len + 1));
-	if (!str)
-		return (NULL);
-	i = -1;
-	while (s1[++i])
-		str[i] = s1[i];
-	j = 0;
-	while (s2[j])
-	{
-		str[i] = s2[j];
-		i++;
-		j++;
-	}
-	str[i] = '\0';
-	free(s1);
-	return (str);
-}
-
-char	*ft_strncpy(char *dst, char *src, int n)
-{
-	int	i;
-
-	if (!src)
-		return (NULL);
-	i = 0;
-	while (src[i] && i < n)
-	{
-		dst[i] = src[i];
-		i++;
-	}
-	dst[i] = '\0';
-	return (dst);
 }
 
 char	*search_path(char *input)
@@ -93,8 +30,8 @@ char	*search_path(char *input)
 		if (!path)
 			return (NULL);
 		ft_strncpy(path, value, path_len);
-		strcat(path, "/");
-		path = ft_strjoin(path, input);
+		ft_strlcat(path, "/", PATH_MAX);
+		ft_strlcat(path, input, PATH_MAX);
 		if (access(path, X_OK) == 0)
 			return (path);
 		free(path);
@@ -107,30 +44,35 @@ char	*search_path(char *input)
 
 void	cleanup_token(t_token **token)
 {
-	t_token	*tmp;
+	t_token	*cur;
+	t_token *next;
 
-	while (*token)
+	cur = *token;
+	while (cur)
 	{
-		tmp = (*token)->next;
-		free(*token);
-		free((*token)->word);
-		*token = tmp;
+		next = cur->next;
+		if (cur->word)
+			free(cur->word);
+		free(cur);
+		cur = next;
 	}
+	*token = NULL;
 }
 
-int	ft_lstsize(t_token *lst)
+void	setup_argv(char **argv, t_token *token)
 {
-	int size;
+	int		i;
+	t_token	*tmp;
 
-    if (!lst)
-        return (0);
-	size = 0;
-	while (lst)
+	tmp = token;
+	i = 0;
+	while (tmp)
 	{
-		size++;
-		lst = lst->next;
+		argv[i] = tmp->word;
+		tmp = tmp->next;
+		i++;
 	}
-	return (size);
+	argv[i] = NULL;
 }
 
 int	interpret(char *input)
@@ -139,51 +81,45 @@ int	interpret(char *input)
 	pid_t	pid;
 	int		status;
 	char	*path;
+	int		i;
 	t_token	*token;
 	t_token *tmp;
 
 	token = tokenize(input);
-	tmp = token;
-	while (tmp)
-	{
-		printf("token->word : %s\n", tmp->word);
-		tmp = tmp->next;
-	}
+	if (!token)
+		return (1);
 	argv = (char **)malloc(sizeof(char *) * (ft_lstsize(token) + 1));
 	if (!argv)
+		return (cleanup_token(&token), 1);
+	setup_argv(argv, token);
+	if (strncmp(argv[0], "exit", 4) == 0)
 	{
+		printf("exit\n");
+		free(argv);
 		cleanup_token(&token);
-		return (1);
+		return (EXIT);
 	}
-	tmp = token;
-	int i = 0;
-	while (tmp)
-	{
-		argv[i] = tmp->word;
-		tmp = tmp->next;
-		i++;
-	}
-	argv[i] = NULL;
 	pid = fork();
 	if (pid < 0)
 	{
-		free(argv);
 		cleanup_token(&token);
-		print_error(input, "fork failed");
+		return (free(argv), 1);
 	}
 	else if (pid == 0)
 	{
 		path = search_path(argv[0]);
 		if (!path)
-		{
+		{	
 			if (!strchr(argv[0], '/'))
 			{
 				printf("%s: command not found\n", argv[0]);
-				return (0);
+				free(argv);
+				cleanup_token(&token);
+				exit(0);
 			}
 			path = argv[0];
 		}
-		if (strncmp(argv[0], "echo", 4) == 0)
+		if (strncmp(argv[0], "echo", 4) == 0 && argv[1] != NULL)
 		{
 			i = 1;
 			if (argv[i + 1] == NULL)
@@ -198,9 +134,15 @@ int	interpret(char *input)
 				}
 			}
 			printf("\n");
+			free(argv);
+			cleanup_token(&token);
+			exit(0);
 		}
-		else if (execve(path, argv, environ) == -1)
-			print_error(input, "exec failed");
+		if (execve(path, argv, environ) == -1)
+		{
+			free(argv);
+			cleanup_token(&token);
+		}
 	}
 	else
 	{

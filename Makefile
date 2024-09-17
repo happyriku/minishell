@@ -2,14 +2,15 @@ NAME = minishell
 
 SRCS = main.c \
 		interpret.c \
+		utils.c \
 		tokenize/tokenize.c \
 		tokenize/new_token.c \
 		tokenize/validation.c \
-		
+
 OBJS = $(SRCS:.c=.o)
 
 LIBS = -lreadline
-CC = cc
+CC = cc -fsanitize=address -g
 
 all: $(NAME)
 

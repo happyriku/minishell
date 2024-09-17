@@ -56,10 +56,21 @@ t_token	*tokenize(char *input)
 			token->next = new_token(filter_operator(input, &input), TK_OPERATOR);
 		else if (is_metacharacter(*input))
 			token->next = new_token(filter_metacharacter(*input, &input), TK_METACHAR);
-		if (is_word(input))
+		else if (is_word(input))
 			token->next = new_token(filter_word(input, &input), TK_WORD);
+		if (!token->next)
+		{
+			cleanup_token(&(head.next));
+			return (NULL);
+		}
 		token = token->next;
 	}
-	token = new_token(NULL, TK_EOF);
+	token->next = new_token(NULL, TK_EOF);
+	if (!token->next)
+	{
+		cleanup_token(&(head.next));
+		return (NULL);
+	}
+	token = token->next;
 	return (head.next);
 }

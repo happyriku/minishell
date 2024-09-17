@@ -12,19 +12,10 @@
 
 #include "include/minishell.h"
 
-bool	is_exit_command(char *input)
-{
-	if (strcmp(input, "exit") == 0)
-	{
-		printf("exit\n");
-		return (true);
-	}
-	return (false);
-}
-
 int	main(void)
 {
 	char	*input;
+	int		res;
 
 	while (1)
 	{
@@ -36,10 +27,14 @@ int	main(void)
 		}
 		if (*input)
 			add_history(input);
-		if (is_exit_command(input))
-			return (EXIT_SUCCESS);
-		if (interpret(input) != 0)
+		res = interpret(input);
+		if (res == EXIT)
+			return (free(input), EXIT_SUCCESS);
+		if (res != 0)
+		{
+			rl_clear_history();
 			return (EXIT_FAILED);
+		}
 	}
 	return (EXIT_SUCCESS);
 }
