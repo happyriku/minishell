@@ -30,15 +30,22 @@ char	*filter_metacharacter(char c, char **rest)
 
 char	*filter_word(char *input, char **rest)
 {
-	int	wc;
-
-	wc = 0;
 	while (**rest && is_word(*rest))
 	{
-		(*rest)++;
-		wc++;
+		if (**rest == SINGLEQUOTE)
+		{
+			(*rest)++;
+			while (**rest && **rest != SINGLEQUOTE)
+			{
+				if (**rest == '\0')
+					printf("unclosed single quote\n");
+				(*rest)++;
+			}
+		}
+		else
+			(*rest)++;
 	}
-	return (ft_strndup(input, wc));
+	return (ft_strndup(input, *rest - input));
 }
 
 t_token	*tokenize(char *input)
@@ -59,18 +66,12 @@ t_token	*tokenize(char *input)
 		else if (is_word(input))
 			token->next = new_token(filter_word(input, &input), TK_WORD);
 		if (!token->next)
-		{
-			cleanup_token(&(head.next));
-			return (NULL);
-		}
+			return (cleanup_token(&(head.next)), NULL);
 		token = token->next;
 	}
 	token->next = new_token(NULL, TK_EOF);
 	if (!token->next)
-	{
-		cleanup_token(&(head.next));
-		return (NULL);
-	}
+		return (cleanup_token(&(head.next)), NULL);
 	token = token->next;
 	return (head.next);
 }

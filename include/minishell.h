@@ -5,7 +5,10 @@
 # define EXIT_FAILED 1
 
 # define PATH_MAX 260
+
 # define EXIT -1
+
+# define SINGLEQUOTE 39
 
 # include <stdio.h>
 # include <unistd.h>

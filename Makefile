@@ -10,7 +10,8 @@ SRCS = main.c \
 OBJS = $(SRCS:.c=.o)
 
 LIBS = -lreadline
-CC = cc -fsanitize=address -g
+CC = cc 
+#-fsanitize=address -g
 
 all: $(NAME)
 
