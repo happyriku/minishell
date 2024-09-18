@@ -86,6 +86,7 @@ int	interpret(char *input)
 	t_token *tmp;
 
 	token = tokenize(input);
+	token = expand(token);
 	if (!token)
 		return (1);
 	argv = (char **)malloc(sizeof(char *) * (ft_lstsize(token) + 1));

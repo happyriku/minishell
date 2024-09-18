@@ -48,6 +48,9 @@ bool	is_metacharacter(char c);
 bool	is_ctrlop(char	*str);
 bool	is_word(char *str);
 
+//expand
+t_token	*expand(t_token *token);
+
 //utils                   *minishellが完成したらlibftの方を用いる
 char	*ft_strndup(const char *s1, size_t n);
 char	*ft_strncpy(char *dst, char *src, int n);
