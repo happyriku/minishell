@@ -85,6 +85,8 @@ int	interpret(char *input)
 	t_token	*token;
 	t_token *tmp;
 
+	if (*input < 1)
+		return (0);
 	token = tokenize(input);
 	token = expand(token);
 	if (!token)
