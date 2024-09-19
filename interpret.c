@@ -89,70 +89,75 @@ int	interpret(char *input)
 		return (0);
 	token = tokenize(input);
 	token = expand(token);
-	if (!token)
-		return (1);
-	argv = (char **)malloc(sizeof(char *) * (ft_lstsize(token) + 1));
-	if (!argv)
-		return (cleanup_token(&token), 1);
-	setup_argv(argv, token);
-	if (strncmp(argv[0], "exit", 4) == 0)
+	while (token)
 	{
-		printf("exit\n");
-		free(argv);
-		cleanup_token(&token);
-		return (EXIT);
+		printf("token->word : %s\n", token->word);
+		token = token->next;
 	}
-	pid = fork();
-	if (pid < 0)
-	{
-		cleanup_token(&token);
-		return (free(argv), 1);
-	}
-	else if (pid == 0)
-	{
-		path = search_path(argv[0]);
-		if (!path)
-		{	
-			if (!strchr(argv[0], '/'))
-			{
-				printf("%s: command not found\n", argv[0]);
-				free(argv);
-				cleanup_token(&token);
-				exit(0);
-			}
-			path = argv[0];
-		}
-		if (strncmp(argv[0], "echo", 4) == 0 && argv[1] != NULL)
-		{
-			i = 1;
-			if (argv[i + 1] == NULL)
-				printf("%s", argv[i]);
-			else
-			{
-				while (argv[i] != NULL && is_word(argv[i]))
-				{
-					printf("%s", argv[i]);
-					printf(" ");
-					i++;
-				}
-			}
-			printf("\n");
-			free(argv);
-			cleanup_token(&token);
-			exit(0);
-		}
-		if (execve(path, argv, environ) == -1)
-		{
-			free(argv);
-			cleanup_token(&token);
-		}
-	}
-	else
-	{
-		wait(&status);
-		free(argv);
-		cleanup_token(&token);
-		return (!WIFEXITED(status));
-	}
+	// if (!token)
+	// 	return (1);
+	// argv = (char **)malloc(sizeof(char *) * (ft_lstsize(token) + 1));
+	// if (!argv)
+	// 	return (cleanup_token(&token), 1);
+	// setup_argv(argv, token);
+	// if (strncmp(argv[0], "exit", 4) == 0)
+	// {
+	// 	printf("exit\n");
+	// 	free(argv);
+	// 	cleanup_token(&token);
+	// 	return (EXIT);
+	// }
+	// pid = fork();
+	// if (pid < 0)
+	// {
+	// 	cleanup_token(&token);
+	// 	return (free(argv), 1);
+	// }
+	// else if (pid == 0)
+	// {
+	// 	path = search_path(argv[0]);
+	// 	if (!path)
+	// 	{	
+	// 		if (!strchr(argv[0], '/'))
+	// 		{
+	// 			printf("%s: command not found\n", argv[0]);
+	// 			free(argv);
+	// 			cleanup_token(&token);
+	// 			exit(0);
+	// 		}
+	// 		path = argv[0];
+	// 	}
+	// 	if (strncmp(argv[0], "echo", 4) == 0 && argv[1] != NULL)
+	// 	{
+	// 		i = 1;
+	// 		if (argv[i + 1] == NULL)
+	// 			printf("%s", argv[i]);
+	// 		else
+	// 		{
+	// 			while (argv[i] != NULL && is_word(argv[i]))
+	// 			{
+	// 				printf("%s", argv[i]);
+	// 				printf(" ");
+	// 				i++;
+	// 			}
+	// 		}
+	// 		printf("\n");
+	// 		free(argv);
+	// 		cleanup_token(&token);
+	// 		exit(0);
+	// 	}
+	// 	if (execve(path, argv, environ) == -1)
+	// 	{
+	// 		free(argv);
+	// 		cleanup_token(&token);
+	// 	}
+	// }
+	// else
+	// {
+	// 	wait(&status);
+	// 	free(argv);
+	// 	cleanup_token(&token);
+	// 	return (!WIFEXITED(status));
+	// }
 	return (0);
 }
