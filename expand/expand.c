@@ -28,6 +28,22 @@ void	append_char(char **new_word, char word)
 	*new_word = memory;
 }
 
+bool	is_closed_quote(char *word)
+{
+	int	count;
+
+	count = 0;
+	while (*word)
+	{
+		if (*word == SINGLEQUOTE)
+			count++;
+		word++;
+	}
+	if (count % 2 != 0)
+		return (false);
+	return (true);
+}
+
 void	quote_removal(t_token *token)
 {
 	char	*word;
@@ -35,9 +51,14 @@ void	quote_removal(t_token *token)
 
 	if (token->word == NULL)
 		return ;
+	if (!is_closed_quote(token->word))
+	{
+		printf("syntax error\n");
+		exit(1);
+	}
 	word = token->word;
 	new_word = NULL;
-	while (*word)
+	while (*word && !is_metacharacter(*word))
 	{
 		if (*word != SINGLEQUOTE)
 			append_char(&new_word, *word);
