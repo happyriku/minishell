@@ -32,10 +32,10 @@ char	*filter_word(char *input, char **rest)
 {
 	while (**rest && is_word(*rest))
 	{
-		if (**rest == SINGLEQUOTE)
+		if (**rest == SINGLEQUOTE || **rest == DOUBLEQUOTE)
 		{
 			(*rest)++;
-			while (**rest && **rest != SINGLEQUOTE)
+			while (**rest && **rest != SINGLEQUOTE && **rest != DOUBLEQUOTE)
 			{
 				if (**rest == '\0')
 					printf("unclosed single quote\n");

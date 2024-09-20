@@ -30,16 +30,20 @@ void	append_char(char **new_word, char word)
 
 bool	is_closed_quote(char *word)
 {
-	int	count;
+	int	single_quote_count;
+	int	double_quote_count;
 
-	count = 0;
+	single_quote_count = 0;
+	double_quote_count = 0;
 	while (*word)
 	{
 		if (*word == SINGLEQUOTE)
-			count++;
+			single_quote_count++;
+		if (*word == DOUBLEQUOTE)
+			double_quote_count++;
 		word++;
 	}
-	if (count % 2 != 0)
+	if (single_quote_count % 2 != 0 || double_quote_count % 2 != 0)
 		return (false);
 	return (true);
 }
@@ -60,7 +64,7 @@ void	quote_removal(t_token *token)
 	new_word = NULL;
 	while (*word && !is_metacharacter(*word))
 	{
-		if (*word != SINGLEQUOTE)
+		if (*word != SINGLEQUOTE && *word != DOUBLEQUOTE)
 			append_char(&new_word, *word);
 		word++;
 	}

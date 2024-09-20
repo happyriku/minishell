@@ -9,6 +9,7 @@
 # define EXIT -1
 
 # define SINGLEQUOTE 39
+# define DOUBLEQUOTE 34
 
 # include <stdio.h>
 # include <unistd.h>
