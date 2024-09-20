@@ -37,6 +37,11 @@ typedef struct s_token
 	int				pid;
 }	t_token;
 
+typedef struct s_info
+{
+	
+}
+
 int		interpret(char *input);
 void	cleanup_token(t_token **token);
 
