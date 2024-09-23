@@ -1,10 +1,17 @@
 #include "../include/minishell.h"
 
+void	fatal_error(char *msg)
+{
+	printf("%s\n", msg);
+	exit(1);
+}
+
 char	*filter_operator(char *input, char **rest)
 {
 	char	*op[] = {"||", "&&", "(", ")", ";;", ";&", "&", ";", "|&", "\n"};
 	int		i;
 	int		length;
+	char	*str;
 
 	length = sizeof(op) / sizeof(op[0]);
 	i = -1;
@@ -13,7 +20,10 @@ char	*filter_operator(char *input, char **rest)
 		if (strncmp(input, op[i], strlen(op[i])) == 0)
 		{
 			(*rest) += strlen(op[i]);
-			return (ft_strndup(op[i], strlen(op[i])));
+			str = ft_strndup(op[i], strlen(op[i]));
+			if (!str)
+				fatal_error(MALLOC_ERROR);
+			return (str);
 		}
 	}
 	return (NULL);
@@ -22,14 +32,20 @@ char	*filter_operator(char *input, char **rest)
 char	*filter_metacharacter(char c, char **rest)
 {
 	char	*res;
+	char	*str;
 
 	res = strchr("|&;()<>\t\n", c);
 	(*rest)++;
-	return (ft_strndup(res, 1));
+	str = ft_strndup(res, 1);
+	if (!str)
+		fatal_error(MALLOC_ERROR);
+	return (str);
 }
 
 char	*filter_word(char *input, char **rest)
 {
+	char	*str;
+
 	while (**rest && is_word(*rest))
 	{
 		if (**rest == SINGLEQUOTE || **rest == DOUBLEQUOTE)
@@ -45,8 +61,10 @@ char	*filter_word(char *input, char **rest)
 		else
 			(*rest)++;
 	}
-	
-	return (ft_strndup(input, *rest - input));
+	str = ft_strndup(input, *rest - input);
+	if (!str)
+		fatal_error(MALLOC_ERROR);
+	return (str);
 }
 
 t_token	*tokenize(char *input)
