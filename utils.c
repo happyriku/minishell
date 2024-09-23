@@ -6,10 +6,10 @@ char	*ft_strndup(const char *s1, size_t n)
 	int			size;
 	size_t		i;
 
+	if (!s1)
+		return (NULL);
 	size = strlen(s1) + 1;
 	dest = (char *)malloc(size * sizeof(char));
-	if (s1 == NULL)
-		return (NULL);
 	if (dest == NULL)
 		return (NULL);
 	i = -1;

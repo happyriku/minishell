@@ -1,13 +1,14 @@
 #include "include/minishell.h"
 
 extern char	**environ;
+t_info g_info = {};
 
-void	print_error(char *input, char *name)
-{
-	free(input);
-	printf("%s\n", name);
-	exit(1);
-}
+// void	print_error(char *input, char *name)
+// {
+// 	free(input);
+// 	printf("%s\n", name);
+// 	exit(1);
+// }
 
 char	*search_path(char *input)
 {
@@ -84,13 +85,22 @@ int	interpret(char *input)
 	int		i;
 	t_token	*token;
 	t_token *tmp;
+	t_info	info;
 
 	if (*input < 1)
 		return (0);
 	token = tokenize(input);
+	if (!token)
+		return (1);
 	token = expand(token);
 	if (!token)
 		return (1);
+	else if (g_info.syntax_error)
+	{
+		cleanup_token(&token);
+		g_info.syntax_error = false;
+		return (0);
+	}
 	argv = (char **)malloc(sizeof(char *) * (ft_lstsize(token) + 1));
 	if (!argv)
 		return (cleanup_token(&token), 1);

@@ -7,6 +7,7 @@
 # define PATH_MAX 260
 
 # define EXIT -1
+# define MALLOC_ERROR "malloc error"
 
 # define SINGLEQUOTE 39
 # define DOUBLEQUOTE 34
@@ -39,8 +40,11 @@ typedef struct s_token
 
 typedef struct s_info
 {
+	bool	syntax_error;
 	
-}
+}	t_info;
+
+extern t_info g_info;
 
 int		interpret(char *input);
 void	cleanup_token(t_token **token);

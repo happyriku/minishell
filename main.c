@@ -33,7 +33,7 @@ int	main(void)
 		if (res != 0)
 		{
 			rl_clear_history();
-			return (EXIT_FAILED);
+			return (free(input), EXIT_FAILED);
 		}
 	}
 	return (EXIT_SUCCESS);

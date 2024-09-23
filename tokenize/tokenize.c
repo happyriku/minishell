@@ -45,6 +45,7 @@ char	*filter_word(char *input, char **rest)
 		else
 			(*rest)++;
 	}
+	
 	return (ft_strndup(input, *rest - input));
 }
 

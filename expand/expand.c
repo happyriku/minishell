@@ -48,6 +48,12 @@ bool	is_closed_quote(char *word)
 	return (true);
 }
 
+void	syntax_error(void)
+{
+	g_info.syntax_error = true;
+	printf("syntax error\n");
+}
+
 void	quote_removal(t_token *token)
 {
 	char	*word;
@@ -56,10 +62,7 @@ void	quote_removal(t_token *token)
 	if (token->word == NULL)
 		return ;
 	if (!is_closed_quote(token->word))
-	{
-		printf("syntax error\n");
-		exit(1);
-	}
+		syntax_error();
 	word = token->word;
 	new_word = NULL;
 	while (*word && !is_metacharacter(*word))
