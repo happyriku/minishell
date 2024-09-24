@@ -54,31 +54,28 @@ void	syntax_error(void)
 	printf("syntax error\n");
 }
 
-void	quote_removal(t_token *token)
+void	quote_removal(t_node *node)
 {
-	char	*word;
+	char	**word;
 	char	*new_word;
 
-	if (token->word == NULL)
+	if (node->next == NULL)
 		return ;
-	if (!is_closed_quote(token->word))
+	if (!is_closed_quote(node->args))
 		syntax_error();
-	word = token->word;
+	word = &(node->args);
 	new_word = NULL;
-	while (*word && !is_metacharacter(*word))
+	while (**word && !is_metacharacter(**word))
 	{
-		if (*word != SINGLEQUOTE && *word != DOUBLEQUOTE)
-			append_char(&new_word, *word);
-		word++;
+		if (**word != SINGLEQUOTE && **word != DOUBLEQUOTE)
+			append_char(&new_word, **word);
+		(*word)++;
 	}
-	token->word = new_word;
-	quote_removal(token->next);
+	node->args = new_word;
+	quote_removal(node->next);
 }
 
-t_token	*expand(t_token *token)
+void	expand(t_node *node)
 {
-	char	*new_word;
-
-	quote_removal(token);
-	return (token);
+	quote_removal(node);
 }

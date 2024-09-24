@@ -22,13 +22,19 @@
 # include <stdbool.h>
 # include <signal.h>
 
-typedef enum s_kind
+typedef enum e_kind
 {
 	TK_WORD,
 	TK_METACHAR,
 	TK_OPERATOR,
 	TK_EOF,
 }	t_kind;
+
+typedef enum e_node_kind
+{
+	ND_SIMPLE_CMD,
+
+}	t_node_kind;
 
 typedef struct s_token
 {
@@ -37,6 +43,13 @@ typedef struct s_token
 	char			*word;
 	int				pid;
 }	t_token;
+
+typedef struct s_node
+{
+	char			*args;
+	struct s_node	*next;
+	t_node_kind		kind;
+}	t_node;
 
 typedef struct s_info
 {
@@ -56,15 +69,17 @@ bool	is_word(char *str);
 bool	is_blank(char c);
 bool	is_metacharacter(char c);
 bool	is_ctrlop(char	*str);
-bool	is_word(char *str);
 
 //expand
-t_token	*expand(t_token *token);
+void	expand(t_node *node);
 
 //utils                   *minishellが完成したらlibftの方を用いる
 char	*ft_strndup(const char *s1, size_t n);
 char	*ft_strncpy(char *dst, char *src, int n);
 int		ft_lstsize(t_token *lst);
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
+
+//parse
+t_node	*parse(t_token *token);
 
 #endif

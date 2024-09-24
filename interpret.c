@@ -60,16 +60,16 @@ void	cleanup_token(t_token **token)
 	*token = NULL;
 }
 
-void	setup_argv(char **argv, t_token *token)
+void	setup_argv(char **argv, t_node *node)
 {
 	int		i;
-	t_token	*tmp;
+	t_node	*tmp;
 
-	tmp = token;
+	tmp = node;
 	i = 0;
 	while (tmp)
 	{
-		argv[i] = tmp->word;
+		argv[i] = tmp->args;
 		tmp = tmp->next;
 		i++;
 	}
@@ -86,16 +86,18 @@ int	interpret(char *input)
 	t_token	*token;
 	t_token *tmp;
 	t_info	info;
+	t_node	*node;
 
 	if (*input < 1)
 		return (0);
 	token = tokenize(input);
 	if (!token)
 		return (1);
-	token = expand(token);
-	if (!token)
+	node = parse(token);
+	if (!node)
 		return (1);
-	else if (g_info.syntax_error)
+	expand(node);
+	if (g_info.syntax_error)
 	{
 		cleanup_token(&token);
 		g_info.syntax_error = false;
@@ -104,7 +106,7 @@ int	interpret(char *input)
 	argv = (char **)malloc(sizeof(char *) * (ft_lstsize(token) + 1));
 	if (!argv)
 		return (cleanup_token(&token), 1);
-	setup_argv(argv, token);
+	setup_argv(argv, node);
 	if (strncmp(argv[0], "exit", 4) == 0)
 	{
 		printf("exit\n");
