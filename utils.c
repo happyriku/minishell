@@ -86,7 +86,7 @@ char	*ft_strncpy(char *dst, char *src, int n)
 	return (dst);
 }
 
-int	ft_lstsize(t_token *lst)
+int	ft_lstsize(t_node *lst)
 {
 	int size;
 

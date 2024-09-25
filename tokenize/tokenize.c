@@ -22,7 +22,7 @@ char	*filter_operator(char *input, char **rest)
 			(*rest) += strlen(op[i]);
 			str = ft_strndup(op[i], strlen(op[i]));
 			if (!str)
-				fatal_error(MALLOC_ERROR);
+				fatal_error("malloc error");
 			return (str);
 		}
 	}
@@ -38,7 +38,7 @@ char	*filter_metacharacter(char c, char **rest)
 	(*rest)++;
 	str = ft_strndup(res, 1);
 	if (!str)
-		fatal_error(MALLOC_ERROR);
+		fatal_error("malloc error");
 	return (str);
 }
 
@@ -63,7 +63,7 @@ char	*filter_word(char *input, char **rest)
 	}
 	str = ft_strndup(input, *rest - input);
 	if (!str)
-		fatal_error(MALLOC_ERROR);
+		fatal_error("malloc error");
 	return (str);
 }
 

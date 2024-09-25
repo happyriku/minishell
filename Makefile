@@ -8,6 +8,7 @@ SRCS = main.c \
 		tokenize/validation.c \
 		expand/expand.c \
 		parse/parse.c \
+		exec/exec.c \
 
 OBJS = $(SRCS:.c=.o)
 

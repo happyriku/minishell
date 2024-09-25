@@ -7,7 +7,7 @@
 # define PATH_MAX 260
 
 # define EXIT -1
-# define MALLOC_ERROR "malloc error"
+# define MALLOC_ERROR -2
 
 # define SINGLEQUOTE 39
 # define DOUBLEQUOTE 34
@@ -76,10 +76,13 @@ void	expand(t_node *node);
 //utils                   *minishellが完成したらlibftの方を用いる
 char	*ft_strndup(const char *s1, size_t n);
 char	*ft_strncpy(char *dst, char *src, int n);
-int		ft_lstsize(t_token *lst);
+int		ft_lstsize(t_node *lst);
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
 
 //parse
 t_node	*parse(t_token *token);
+
+//exec
+int	exec(t_node *node);
 
 #endif
