@@ -38,7 +38,9 @@ int	interpret(char *input)
 		return (1);
 	node = parse(token);
 	if (!node)
+	{
 		return (1);
+	}
 	expand(node);
 	if (g_info.syntax_error)
 	{

@@ -21,6 +21,7 @@
 # include <sys/wait.h>
 # include <stdbool.h>
 # include <signal.h>
+# include <fcntl.h>
 
 typedef enum e_kind
 {
@@ -84,5 +85,11 @@ t_node	*parse(t_token *token);
 
 //exec
 int	exec(t_node *node);
+;
+//redirect
+int	redirect(t_node *node);
+
+//error
+void	fatal_error(char *msg);
 
 #endif
