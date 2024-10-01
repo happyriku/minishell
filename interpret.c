@@ -37,10 +37,14 @@ int	interpret(char *input)
 	if (!token)
 		return (1);
 	node = parse(token);
-	if (!node)
+	if (g_info.syntax_error)
 	{
-		return (1);
+		cleanup_token(&token);
+		g_info.syntax_error = false;
+		return (0);
 	}
+	if (!node)
+		return (1);
 	expand(node);
 	if (g_info.syntax_error)
 	{
