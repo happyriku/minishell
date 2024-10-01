@@ -26,8 +26,6 @@ t_node	*parse(t_token *token)
 			break ;
 		else if (token->kind == TK_WORD)
 			node->next = new_node(token->word, ND_SIMPLE_CMD);
-		else
-			node->next = new_node()
 		if (!node->next)
 			return (NULL);
 		node = node->next;
