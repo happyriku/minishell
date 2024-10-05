@@ -7,9 +7,9 @@ t_node	*new_node(char *word, t_node_kind kind)
 	node = (t_node *)malloc(sizeof(t_node));
 	if (!node)
 		return (NULL);
-	node->args = word;
 	node->kind = kind;
 	node->next = NULL;
+	node->redirect = NULL;
 	return (node);
 }
 
@@ -40,74 +40,124 @@ void	handle_metachar_syntax_error(char	*word)
 	}
 }
 
-t_node	*new_redirect_node(t_token *token, t_node_kind kind)
+t_node	*new_redirect_node(t_token **token, t_node_kind kind)
 {
 	t_node	*redirect;
 
 	redirect = malloc(sizeof(t_node));
 	if (!redirect)
 		return (NULL);
-	redirect->filename = token->next->word;
+	redirect->filename = (*token)->next->word;
+	*token = (*token)->next;
 	return (redirect);
 }
 
 bool	has_redirect(t_token *token)
 {
-	if (strcmp(token->word, ">") == 0 && token->next->kind == TK_WORD)
-		return (true);
-	else if (strcmp(token->word, "<") == 0 && token->next->kind == TK_WORD)
-		return (true);
-	else if (strcmp(token->word, ">>") == 0 && token->next->kind == TK_WORD)
-		return (true);
-	else if (strcmp(token->word, "<<") == 0 && token->next->kind == TK_WORD)
+	if (strcmp(token->word, ">") == 0 || strcmp(token->word, "<") == 0
+			|| strcmp(token->word, ">>") == 0 || strcmp(token->word, "<<") == 0)
 		return (true);
 	else
 		return (false);
 }
 
+void	append_token(t_token **args, t_token *token)
+{
+	t_token *cur;
+
+	if (!token)
+		return ;
+	if (!(*args))
+	{
+		*args = token;
+		return ;
+	}
+	cur = *args;
+	while (cur->next)
+		cur = cur->next;
+	cur->next = token;
+}
+
+void	append_node(t_node	**redirect, t_node *node)
+{
+	t_node	*cur;
+
+	if (!node)
+		return ;
+	if (!(*redirect))
+	{
+		*redirect = node;
+		return ;
+	}
+	cur = *redirect;
+	while (cur->next)
+		cur = cur->next;
+	cur->next = node;
+	return ;
+}
+
+int	init_node(t_node **node)
+{
+	*node = new_node(NULL, ND_SIMPLE_CMD);
+	if (!(*node))
+		return (0);
+	(*node)->args = new_token(NULL, TK_EOF);
+	if (!(*node)->args)
+		return (0);
+	(*node)->args = (*node)->args->next;
+	return (1);
+}
+
 t_node	*get_node(t_token *token)
 {
 	t_node	*node;
-	t_node head;
+	t_token	*args;
+	t_node	*redirect;
 
-	head.next = NULL;
-	node = &head;
+	if (!init_node(&node))
+		return (NULL);
 	while (token)
 	{
 		if (token->kind == TK_EOF)
 			break ;
 		else if (token->kind == TK_WORD)
-		{
-			node->next = new_node(token->word, ND_SIMPLE_CMD);
-			if (!node->next)
-				return (NULL);
-			node = node->next;
-		}
-		else if (has_redirect(token))
-		{
-			node->redirect = new_redirect_node(token, ND_REDIRECT);
-			if (!node->redirect)
-				return (NULL);
-		}
+			append_token(&(node->args), new_token(token->word, TK_WORD));
+		else if (strcmp(token->word, ">") == 0 && token->next->kind == TK_WORD)
+			append_node(&(node->redirect), new_redirect_node(&token, ND_REDIRECT));
+		else if (strcmp(token->word, "<") == 0 && token->next->kind == TK_WORD)
+			append_node(&(node->redirect), new_redirect_node(&token, ND_REDIRECT));
+		else if (strcmp(token->word, ">>") == 0 && token->next->kind == TK_WORD)
+			append_node(&(node->redirect), new_redirect_node(&token, ND_REDIRECT));
+		else if (strcmp(token->word, "<<") == 0 && token->next->kind == TK_WORD)
+			append_node(&(node->redirect), new_redirect_node(&token, ND_REDIRECT));
 		token = token->next;
 	}
-	node->next = new_node(NULL, ND_SIMPLE_CMD);
-	if (!node->next)
-		return (NULL);
-	node = node->next;
-	return (head.next);	
+	append_token(&(node->args), new_token(NULL, TK_EOF));
+	return (node);	
 }
 
 t_node	*parse(t_token *token)
 {
 	t_node	*node;
+	t_token	*args;
 
 	node = get_node(token);
+	args = node->args;
+	while (args)
+	{
+		if (!args->next)
+			break ;
+		printf("node->args->word : %s\n", args->word);
+		args = args->next;
+	}
+	//printf("node->redirect->filename : %s\n", node->redirect->filename);
+	//printf("node->redirect->filename : %s\n", node->redirect->filename);
+	// if (!node->redirect->filename)
+	// {
+	// 	printf("------\n");
+	// 	printf("node->redirect->word : %s\n", node->redirect->word);
+	// 	handle_metachar_syntax_error(node->redirect->word);
+	// 	g_info.syntax_error = true;
+	// }
 	return (node);
 }
-
-	// else
-		// {
-		// 	handle_metachar_syntax_error(token->word);
-		// 	g_info.syntax_error = true;
-		// }
