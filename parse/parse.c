@@ -40,7 +40,32 @@ void	handle_metachar_syntax_error(char	*word)
 	}
 }
 
-t_node	*parse(t_token *token)
+t_node	*new_redirect_node(t_token *token, t_node_kind kind)
+{
+	t_node	*redirect;
+
+	redirect = malloc(sizeof(t_node));
+	if (!redirect)
+		return (NULL);
+	redirect->filename = token->next->word;
+	return (redirect);
+}
+
+bool	has_redirect(t_token *token)
+{
+	if (strcmp(token->word, ">") == 0 && token->next->kind == TK_WORD)
+		return (true);
+	else if (strcmp(token->word, "<") == 0 && token->next->kind == TK_WORD)
+		return (true);
+	else if (strcmp(token->word, ">>") == 0 && token->next->kind == TK_WORD)
+		return (true);
+	else if (strcmp(token->word, "<<") == 0 && token->next->kind == TK_WORD)
+		return (true);
+	else
+		return (false);
+}
+
+t_node	*get_node(t_token *token)
 {
 	t_node	*node;
 	t_node head;
@@ -52,20 +77,37 @@ t_node	*parse(t_token *token)
 		if (token->kind == TK_EOF)
 			break ;
 		else if (token->kind == TK_WORD)
-			node->next = new_node(token->word, ND_SIMPLE_CMD);
-		else
 		{
-			handle_metachar_syntax_error(token->word);
-			g_info.syntax_error = true;
+			node->next = new_node(token->word, ND_SIMPLE_CMD);
+			if (!node->next)
+				return (NULL);
+			node = node->next;
 		}
-		if (!node->next)
-			return (NULL);
-		node = node->next;
+		else if (has_redirect(token))
+		{
+			node->redirect = new_redirect_node(token, ND_REDIRECT);
+			if (!node->redirect)
+				return (NULL);
+		}
 		token = token->next;
 	}
 	node->next = new_node(NULL, ND_SIMPLE_CMD);
 	if (!node->next)
 		return (NULL);
 	node = node->next;
-	return (head.next);
+	return (head.next);	
 }
+
+t_node	*parse(t_token *token)
+{
+	t_node	*node;
+
+	node = get_node(token);
+	return (node);
+}
+
+	// else
+		// {
+		// 	handle_metachar_syntax_error(token->word);
+		// 	g_info.syntax_error = true;
+		// }

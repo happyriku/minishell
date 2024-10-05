@@ -34,6 +34,7 @@ typedef enum e_kind
 typedef enum e_node_kind
 {
 	ND_SIMPLE_CMD,
+	ND_REDIRECT,
 
 }	t_node_kind;
 
@@ -49,6 +50,8 @@ typedef struct s_node
 {
 	char			*args;
 	struct s_node	*next;
+	struct s_node	*redirect;
+	char			*filename;
 	t_node_kind		kind;
 }	t_node;
 
