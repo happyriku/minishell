@@ -142,15 +142,10 @@ t_node	*parse(t_token *token)
 	t_token	*args;
 
 	node = get_node(token);
-	args = node->args;
-	while (args)
-	{
-		if (!args->next)
-			break ;
-		printf("node->args->word : %s\n", args->word);
-		args = args->next;
-	}
-	//printf("node->redirect->filename : %s\n", node->redirect->filename);
+	return (node);
+}
+
+//printf("node->redirect->filename : %s\n", node->redirect->filename);
 	//printf("node->redirect->filename : %s\n", node->redirect->filename);
 	// if (!node->redirect->filename)
 	// {
@@ -159,5 +154,3 @@ t_node	*parse(t_token *token)
 	// 	handle_metachar_syntax_error(node->redirect->word);
 	// 	g_info.syntax_error = true;
 	// }
-	return (node);
-}
