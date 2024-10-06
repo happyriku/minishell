@@ -4,13 +4,15 @@ void	do_redirect(t_node *redirect, char *word)
 {
 	int	fd;
 
+	if (!redirect)
+		return ;
 	fd = open(redirect->filename, O_CREAT | O_RDWR, 0644);
 	if (fd < 0)
 		fatal_error("open");
-	write(fd, word, strlen(word));
+	//write(fd, word, strlen(word));
 	if (dup2(fd, STDOUT_FILENO) == -1)
 		fatal_error("dup2");
-	return ;
+	//do_redirect(redirect->next, NULL);
 }
 
 int	exec_echo(char **argv, t_node *node)
@@ -22,11 +24,9 @@ int	exec_echo(char **argv, t_node *node)
 	{
 		if (node->redirect != NULL)
 			do_redirect(node->redirect, argv[i]);
-		else if (argv[i] && is_word(argv[i]))
-		{
-			printf("%s", argv[i]);
-			printf(" ");
-		}
+		write(STDOUT_FILENO, argv[i], strlen(argv[i]));
+		if (argv[i] && is_word(argv[i]))
+			write(STDOUT_FILENO, " ", 1);
 	}
 	printf("\n");
 	return (free(argv), 1);

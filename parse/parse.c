@@ -144,10 +144,6 @@ t_node	*parse(t_token *token)
 	t_token	*args;
 
 	node = get_node(token);
-	while (node->redirect->filename)
-	{
-		printf("")
-	}
 	return (node);
 }
 

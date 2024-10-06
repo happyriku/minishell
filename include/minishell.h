@@ -54,10 +54,11 @@ typedef struct s_node
 {
 	t_token			*args;
 	struct s_node	*next;
+	t_node_kind		kind;
+	//redirect
 	struct s_node	*redirect;
 	char			*word;
 	char			*filename;
-	t_node_kind		kind;
 }	t_node;
 
 typedef struct s_info
