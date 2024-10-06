@@ -2,6 +2,21 @@
 
 extern char **environ;
 
+void	do_redirect(t_node *redirect)
+{
+	int	fd;
+
+	if (!redirect)
+		return ;
+	fd = open(redirect->filename, O_CREAT | O_RDWR, 0644);
+	if (fd < 0)
+		fatal_error("open");
+	if (dup2(fd, STDOUT_FILENO) == -1)
+		fatal_error("dup2");
+	close(fd);
+	do_redirect(redirect->next);
+}
+
 char	*search_path(char *input)
 {
 	char	*value;
@@ -84,7 +99,11 @@ int	exec(t_node *node)
 			path = argv[0];
 		}
 		if (strncmp(argv[0], "echo", 4) == 0 && argv[1] != NULL)
+		{
+			if (node->redirect != NULL)
+				do_redirect(node->redirect);
 			return (exec_echo(argv, node));
+		}
 		else
 			if (execve(path, argv, environ) == -1)
 				return (free(argv), 0);
