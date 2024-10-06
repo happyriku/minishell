@@ -20,12 +20,8 @@ int	exec_echo(char **argv, t_node *node)
 	i = 0;
 	while (argv[++i])
 	{
-		//printf("node->redirect->filename : %s\n", node->redirect->filename);
 		if (node->redirect != NULL)
-		{
-			//write(STDOUT_FILENO, argv[i], sizeof(argv[i]));
 			do_redirect(node->redirect, argv[i]);
-		}
 		else if (argv[i] && is_word(argv[i]))
 		{
 			printf("%s", argv[i]);
