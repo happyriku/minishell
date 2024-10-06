@@ -55,7 +55,7 @@ t_node	*new_redirect_node(t_token **token, t_node_kind kind)
 bool	has_redirect(t_token *token)
 {
 	if (strcmp(token->word, ">") == 0 || strcmp(token->word, "<") == 0
-			|| strcmp(token->word, ">>") == 0 || strcmp(token->word, "<<") == 0)
+		|| strcmp(token->word, ">>") == 0 || strcmp(token->word, "<<") == 0)
 		return (true);
 	else
 		return (false);
