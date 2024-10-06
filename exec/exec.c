@@ -84,24 +84,10 @@ int	exec(t_node *node)
 			path = argv[0];
 		}
 		if (strncmp(argv[0], "echo", 4) == 0 && argv[1] != NULL)
-		{
-			i = 1;
-			if (argv[i + 1] == NULL)
-				printf("%s", argv[i]);
-			else
-			{
-				while (argv[i] != NULL && is_word(argv[i]))
-				{
-					printf("%s", argv[i]);
-					printf(" ");
-					i++;
-				}
-			}
-			printf("\n");
-			return (free(argv), 1);
-		}
-		if (execve(path, argv, environ) == -1)
-			return (free(argv), 0);
+			return (exec_echo(argv, node));
+		else
+			if (execve(path, argv, environ) == -1)
+				return (free(argv), 0);
 	}
 	else
 	{

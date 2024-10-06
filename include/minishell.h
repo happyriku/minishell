@@ -63,7 +63,7 @@ typedef struct s_node
 typedef struct s_info
 {
 	bool	syntax_error;
-	
+
 }	t_info;
 
 extern t_info g_info;
@@ -93,7 +93,7 @@ t_node	*parse(t_token *token);
 
 //exec
 int	exec(t_node *node);
-;
+int	exec_echo(char **argv, t_node *node);
 //redirect
 //int	redirect(t_node *node);
 
