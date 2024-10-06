@@ -35,17 +35,17 @@ char	*search_path(char *input)
 	return (NULL);
 }
 
-void	setup_argv(char **argv, t_node *node)
+void	setup_argv(char **argv, t_token *args)
 {
 	int		i;
-	t_node	*tmp;
+	t_token	*cur;
 
-	tmp = node;
+	cur = args;
 	i = 0;
-	while (tmp)
+	while (cur->word)
 	{
-		argv[i] = tmp->args;
-		tmp = tmp->next;
+		argv[i] = cur->word;
+		cur = cur->next;
 		i++;
 	}
 	argv[i] = NULL;
@@ -59,10 +59,10 @@ int	exec(t_node *node)
 	int		i;
 	int		status;
 
-	argv = (char **)malloc(sizeof(char *) * (ft_lstsize(node) + 1));
+	argv = (char **)malloc(sizeof(char *) * (ft_lstsize(node->args) + 1));
 	if (!argv)
 		return (MALLOC_ERROR);
-	setup_argv(argv, node);
+	setup_argv(argv, node->args);
 	if (strncmp(argv[0], "exit", 4) == 0)
 	{
 		printf("exit\n");

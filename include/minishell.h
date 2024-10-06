@@ -85,7 +85,7 @@ void	expand(t_node *node);
 //utils                   *minishellが完成したらlibftの方を用いる
 char	*ft_strndup(const char *s1, size_t n);
 char	*ft_strncpy(char *dst, char *src, int n);
-int		ft_lstsize(t_node *lst);
+int		ft_lstsize(t_token *lst);
 size_t	ft_strlcat(char *dst, const char *src, size_t dstsize);
 
 //parse
@@ -95,7 +95,7 @@ t_node	*parse(t_token *token);
 int	exec(t_node *node);
 ;
 //redirect
-int	redirect(t_node *node);
+//int	redirect(t_node *node);
 
 //error
 void	fatal_error(char *msg);
