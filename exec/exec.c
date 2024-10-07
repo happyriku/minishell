@@ -2,16 +2,30 @@
 
 extern char **environ;
 
+int	open_file(t_node *redirect)
+{
+	int	fd;
+
+	if (redirect->kind == ND_REDIRECT_OUT)
+	{
+		fd = open(redirect->filename,
+				O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	}
+	else if (redirect->kind == ND_REDIRECT_IN)
+		fd = open(redirect->filename, O_RDONLY);
+	if (fd < 0)
+		fatal_error("open");
+	return (fd);
+}
+
 void	do_redirect(t_node *redirect)
 {
 	int	fd;
 
 	if (!redirect)
 		return ;
-	fd = open(redirect->filename, O_CREAT | O_RDWR, 0644);
-	if (fd < 0)
-		fatal_error("open");
-	if (dup2(fd, redirect->fd) == -1)
+	redirect->file_fd = open_file(redirect);
+	if (dup2(redirect->file_fd, redirect->std_fd) == -1)
 		fatal_error("dup2");
 	close(fd);
 	do_redirect(redirect->next);
@@ -88,6 +102,8 @@ int	exec(t_node *node)
 		return (free(argv), -1);
 	else if (pid == 0)
 	{
+		if (node->redirect != NULL)
+			do_redirect(node->redirect);
 		path = search_path(argv[0]);
 		if (!path)
 		{	
@@ -99,11 +115,7 @@ int	exec(t_node *node)
 			path = argv[0];
 		}
 		if (strncmp(argv[0], "echo", 4) == 0 && argv[1] != NULL)
-		{
-			if (node->redirect != NULL)
-				do_redirect(node->redirect);
 			return (exec_echo(argv, node));
-		}
 		else
 			if (execve(path, argv, environ) == -1)
 				return (free(argv), 0);

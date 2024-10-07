@@ -59,7 +59,8 @@ typedef struct s_node
 	struct s_node	*redirect;
 	char			*word;
 	char			*filename;
-	int				fd;
+	int				std_fd;
+	int				file_fd;
 }	t_node;
 
 typedef struct s_info

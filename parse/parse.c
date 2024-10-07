@@ -48,7 +48,7 @@ int	filter_redirect(char *word)
 		return (STDIN_FILENO);
 }
 
-t_node	*new_redirect_node(t_token **rest, char *word)
+t_node	*new_redirect_node(t_token **rest, char *word, t_node_kind kind)
 {
 	t_node	*redirect;
 
@@ -57,8 +57,8 @@ t_node	*new_redirect_node(t_token **rest, char *word)
 		return (NULL);
 	redirect->filename = word;
 	redirect->next = NULL;
-	redirect->kind = ND_REDIRECT;
-	redirect->fd = filter_redirect((*rest)->word);
+	redirect->kind = kind;
+	redirect->std_fd = filter_redirect((*rest)->word);
 	*rest = (*rest)->next;
 	return (redirect);
 }
@@ -134,13 +134,13 @@ t_node	*get_node(t_token *token)
 		else if (token->kind == TK_WORD)
 			append_token(&(node->args), new_token(token->word, TK_WORD));
 		else if (strcmp(token->word, ">") == 0 && token->next->kind == TK_WORD)
-			append_node(&(node->redirect), new_redirect_node(&token, token->next->word));
+			append_node(&(node->redirect), new_redirect_node(&token, token->next->word, ND_REDIRECT_OUT));
 		else if (strcmp(token->word, "<") == 0 && token->next->kind == TK_WORD)
-			append_node(&(node->redirect), new_redirect_node(&token, token->next->word));
+			append_node(&(node->redirect), new_redirect_node(&token, token->next->word, ND_REDIRECT_IN));
 		else if (strcmp(token->word, ">>") == 0 && token->next->kind == TK_WORD)
-			append_node(&(node->redirect), new_redirect_node(&token, token->next->word));
+			append_node(&(node->redirect), new_redirect_node(&token, token->next->word, ND_REDIRECT_APPEND));
 		else if (strcmp(token->word, "<<") == 0 && token->next->kind == TK_WORD)
-			append_node(&(node->redirect), new_redirect_node(&token, token->next->word));
+			append_node(&(node->redirect), new_redirect_node(&token, token->next->word, ND_HEREDOC));
 		token = token->next;
 	}
 	append_token(&(node->args), new_token(NULL, TK_EOF));
