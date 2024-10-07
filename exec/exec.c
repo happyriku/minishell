@@ -11,7 +11,7 @@ void	do_redirect(t_node *redirect)
 	fd = open(redirect->filename, O_CREAT | O_RDWR, 0644);
 	if (fd < 0)
 		fatal_error("open");
-	if (dup2(fd, STDOUT_FILENO) == -1)
+	if (dup2(fd, redirect->fd) == -1)
 		fatal_error("dup2");
 	close(fd);
 	do_redirect(redirect->next);

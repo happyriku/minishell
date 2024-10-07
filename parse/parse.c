@@ -40,6 +40,14 @@ void	handle_metachar_syntax_error(char	*word)
 	}
 }
 
+int	filter_redirect(char *word)
+{
+	if (strcmp(word, ">") == 0)
+		return (STDOUT_FILENO);
+	else if (strcmp(word, "<") == 0)
+		return (STDIN_FILENO);
+}
+
 t_node	*new_redirect_node(t_token **rest, char *word)
 {
 	t_node	*redirect;
@@ -50,6 +58,7 @@ t_node	*new_redirect_node(t_token **rest, char *word)
 	redirect->filename = word;
 	redirect->next = NULL;
 	redirect->kind = ND_REDIRECT;
+	redirect->fd = filter_redirect((*rest)->word);
 	*rest = (*rest)->next;
 	return (redirect);
 }
